@@ -1,9 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./App.css";
 function App() {
   const [data, setData] = useState(null);
-  const [filteredData, setFilteredData] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
+
+  const visibleData = useMemo(() => {
+    if (selectedUser == null) return data; // If no user is selected, show all data
+    return data.filter((item) => item.userId === selectedUser);
+  }, [data, selectedUser]);
+
   useEffect(() => {
     fetch("https://jsonplaceholder.typicode.com/posts")
       .then((response) => response.json())
@@ -13,14 +18,18 @@ function App() {
 
   return (
     <div className="App">
-      <button className="Header" onClick={() => setFilteredData(data)}>
+      <button
+        className="Header"
+        onClick={() => {
+          setSelectedUser(null);
+        }}
+      >
         Data From API
       </button>
       <div className="Buttons">
         <button
           className={selectedUser === 1 ? "selected" : ""}
           onClick={() => {
-            setFilteredData(data.filter((item) => item.userId === 1));
             setSelectedUser(1);
           }}
         >
@@ -29,7 +38,6 @@ function App() {
         <button
           className={selectedUser === 2 ? "selected" : ""}
           onClick={() => {
-            setFilteredData(data.filter((item) => item.userId === 2));
             setSelectedUser(2);
           }}
         >
@@ -38,7 +46,6 @@ function App() {
         <button
           className={selectedUser === 3 ? "selected" : ""}
           onClick={() => {
-            setFilteredData(data.filter((item) => item.userId === 3));
             setSelectedUser(3);
           }}
         >
@@ -47,7 +54,6 @@ function App() {
         <button
           className={selectedUser === 4 ? "selected" : ""}
           onClick={() => {
-            setFilteredData(data.filter((item) => item.userId === 4));
             setSelectedUser(4);
           }}
         >
@@ -56,7 +62,6 @@ function App() {
         <button
           className={selectedUser === 5 ? "selected" : ""}
           onClick={() => {
-            setFilteredData(data.filter((item) => item.userId === 5));
             setSelectedUser(5);
           }}
         >
@@ -65,7 +70,6 @@ function App() {
         <button
           className={selectedUser === 6 ? "selected" : ""}
           onClick={() => {
-            setFilteredData(data.filter((item) => item.userId === 6));
             setSelectedUser(6);
           }}
         >
@@ -74,7 +78,6 @@ function App() {
         <button
           className={selectedUser === 7 ? "selected" : ""}
           onClick={() => {
-            setFilteredData(data.filter((item) => item.userId === 7));
             setSelectedUser(7);
           }}
         >
@@ -82,18 +85,14 @@ function App() {
         </button>
       </div>
       <div className="Content">
-        {filteredData
-          ? filteredData.map((item) => (
-              <div key={item.id}>
+        {visibleData
+          ? visibleData.map((item) => (
+              <div key={item.id} className="Card">
                 <h3>{item.title}</h3>
                 <p>{item.body}</p>
-              </div>
-            ))
-          : data
-          ? data.map((item) => (
-              <div key={item.id}>
-                <h3>{item.title}</h3>
-                <p>{item.body}</p>
+                <p className="Card-user-id">
+                  <strong>User ID:</strong> {item.userId}
+                </p>
               </div>
             ))
           : "Loading..."}
